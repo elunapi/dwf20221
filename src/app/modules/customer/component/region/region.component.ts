@@ -5,6 +5,8 @@ import { FormBuilder, Validators} from '@angular/forms';
 
 declare var $: any;
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-region',
   templateUrl: './region.component.html',
@@ -60,10 +62,22 @@ export class RegionComponent implements OnInit {
           this.getRegions();
           this.closeModal();
           $("#botonRegistro").prop('disabled', false);
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '¡Registro exitoso!',
+            showConfirmButton: false,
+            timer: 1500
+          })
         },
         err => {
           console.log(err);
           $("#botonRegistro").prop('disabled', false);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La región no puede ser registrada'
+          })
         }
       )
     }else{
@@ -73,10 +87,22 @@ export class RegionComponent implements OnInit {
           this.getRegions();
           this.closeModal();
           $("#botonRegistro").prop('disabled', false);
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '¡Actualización exitosa!',
+            showConfirmButton: false,
+            timer: 1500
+          })
         },
         err => {
           console.log(err);
           $("#botonRegistro").prop('disabled', false);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La región no puede ser actualizada'
+          })
         }
         
       )
@@ -99,13 +125,40 @@ export class RegionComponent implements OnInit {
   }
 
   deleteRegion(id_region: number){
-    this.region_service.deleteRegion(id_region).subscribe(
-      res => {
-        console.log(this.region);
-        this.getRegions();
-      },
-      err => console.log(err)
-    )
+    Swal.fire({
+      title: '¿Deseas eliminar la región?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.region_service.deleteRegion(id_region).subscribe(
+          res => {
+            console.log(this.region);
+            this.getRegions();
+          },
+          err => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'La región no puede ser eliminada'
+            })
+            console.log(err)
+          }
+        )
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: '¡Región eliminada!',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+    })
+    
   }
 
   get f() {
